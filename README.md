@@ -1,3 +1,3 @@
-# arzakRubin.github.io-rpg
+# arzakRubin-rpg.github.io
 Material para estudo
-https://arzakRubin.github.io-rpg/RPGMAP/atlas/index1.html
+https://ArzakRubin-rpg.github.io
