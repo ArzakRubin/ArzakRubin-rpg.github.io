@@ -1,0 +1,69 @@
+/****************/
+/* STYLE COMMUN */
+/****************/
+
+* 			{box-sizing:border-box; margin:0; padding:0; outline:none;}
+html	 	{font-size:10px;}
+body	 	{font-family:Verdana, Arial, sans-serif; background-color:#FFF;}
+
+h1	   		{font-family:Helvetica, Arial, sans-serif; font-size:48px; line-height:48px; font-weight:bold; color:#fff;}
+h1 a:link, h1 a:visited, h1 a:hover {text-decoration:none; color:#fff;}   
+.header 	{background:#161616; width:100%; padding:28px 10px 10px 10px;}
+.header p  	{font-family:Verdana, Arial, sans-serif; font-size:12px; color:#BBB; padding-top:5px}
+
+hr	 		{display:block; clear:both; border:0;}
+
+div.col		{display:inline-block; width:100%; vertical-align:top; font-size:1.2rem; padding:10px;} 
+
+textarea, select, input, span {font-family:Verdana, Arial, sans-serif; font-size:1.2rem; padding:2px;}
+button		{margin:2px; background-color:#b80000; color:#FFF; padding:7px 14px 7px 14px; border:0px solid #C80000; border-radius:4px;}
+
+.center		{text-align:center;}
+.gras		{font-weight:bold;}
+.red		{color:red}
+
+div.ads		{text-align:center; margin:8px; }
+
+@media only screen and (max-width:1099px) {
+	h1	   		{font-size:3rem; line-height:18px;}
+	.header 	{padding-left:10px; padding-bottom:0px}
+	.header p  	{margin-top:5px; font-size:12px;}
+}
+
+/********/
+/* MENU */
+/********/
+
+.header ul { list-style:none; overflow:hidden; padding-top:5px;}
+.header li { border-bottom:1px solid #bbb; display:block; font-size:15px; font-family:Helvetica, Arial, sans-serif; font-weight:bold; padding:7px 12px 6px 22px; background-color:#e8e8e8;}
+.header li a {text-decoration:none; color:#444; text-shadow: 0 1px #fff;}
+
+.header .menu {clear:both; max-height:0; transition:max-height .2s ease-out; }
+.header .menu-icon {position:absolute;right:10px; top:24px; padding:4px; color:white; font-size:2rem; transition:background .2s ease-out;}
+.header .menu-btn {display:none;}
+.header .menu-btn:checked ~ .menu {max-height:400px;}
+
+.header .fa-external-link-alt {font-size:1.0rem;}
+
+@media (min-width:1099px) {
+	.header ul {position:absolute; right:10px; top:68px; overflow:visible;}
+	.header li {float:left; white-space:nowrap; border:none; background-color:transparent; padding:6px 12px; color:#989898;}
+	.header li a {color:#989898; text-shadow:none;}
+	.header li a:hover, .header li i:hover, .header li a.current {color:white;}
+	.header li.current {color:#fff;}
+	.header .menu {clear:none; float:right; max-height:none; }
+	.header .menu-icon { display:none; }
+
+	ul.menu li {cursor:pointer;}	/* liens javascript */
+	ul.menu li:hover {color:white;}
+}
+
+/*********/
+/* MODAL */
+/*********/
+
+#overlay 	{position:fixed; top:0; left:0; width:100%; height:100%; background:#000; opacity:0.5; filter:alpha(opacity=50); }
+#modal 		{position:absolute; border-radius:14px; padding:8px; }
+#content 	{border-radius:8px; background:#fff; padding:10px; margin:30px; line-height:18px;}
+#close 		{position:absolute; background:url(images/close.png) 0 0 no-repeat; width:36px; height:36px; display:block; text-indent:-9999px; top:-9px; right:-9px; margin:30px; }
+#content i	{font-size:18px; padding:0px; float:none; position:static; }

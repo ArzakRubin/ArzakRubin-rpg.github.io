@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="fr">
+
+
+<!-- Mirrored from www.aidedd.org/atlas/index.php?map=L&l=0 by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 15 Mar 2021 19:29:11 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Carte interactive de Laelith</title>	
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="description" content="Carte interactive de Laelith : zoom, calcul des distances, affichage des zones/régions, sélection des types de points, et plus encore !" />	<script src="../dnd-commun/lib/jquery.min.js"></script>
+	<script src="../dnd-commun/lib/jquery-ui.min.js"></script>
+	<script src="../dnd-commun/lib/raphael.min.js"></script>
+	<script src="lang_05e1f.js?v=2"></script>
+	<script src="fonctions7b30.js?v=4"></script>
+	<link rel="canonical" href="indexbefe.html?map=L" />
+	<link rel="icon" href="https://www.aidedd.org/themes/simple/images/favicon.ico" sizes="16x16" />
+	<link rel="icon" href="../themes/simple/images/favicon-32x32.png" sizes="32x32" />
+	<link rel="apple-touch-icon" href="../themes/simple/images/favicon-152x152.png" sizes="152x152" />
+	<link rel="icon" href="../themes/simple/images/favicon-192x192.png" sizes="192x192" />
+	<link rel="stylesheet" href="../themes/simple/css/all.min.css" />
+	<link rel="stylesheet" href="style30f4.css?v=3" type="text/css" /> 
+<script src="dataL7b30.js?v=4"></script>	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-346920-5"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+	  gtag('config', 'UA-346920-5');
+	</script>
+</head>
+
+<body>
+	<script>
+		var carte = 'L';
+		var lang  = '0';
+		var realWidth, realHeight, ratio;
+
+		if (isMobile())
+		{	var zoom=4, zoomPoint=zoomCelPoint, moveStep=100, zoomMax=zoomCelMax; }
+		else
+		{	var zoom=1, moveStep=100; }
+
+		var zoomLite=1.1, zoomStrong=1.25;
+		var arr = new Array();
+		var availableLieux = new Array();
+		var viewPoints=0, viewZones=1; 
+		var Xclick=Yclick=clickToMove=0;
+		var drawing=distance=0;
+		var oldX=oldY=idT=0;
+		var screenW = $(window).width();
+ 		var screenH = $(window).height();
+		var offsetX=0, offsetY=0;
+		var tailleX, tailleY;
+
+		$("body").css("overflow", "hidden"); 	/* enleve les scrollbar */
+	</script>
+	<div id="bandeau">
+		<i class="fas fa-bars" title="Menu" onclick="toggleMenu()"></i>
+		<div id="filtre"><i id="del-icon" class="fas fa-times" style="display:none" title="Effacer" onclick="setSearch()"></i><i id="search-icon" class="fas fa-search"></i><input id="search" value="Rechercher" class="txtgris" onclick="clearSearch()" /></div>
+	</div>
+	<div id="descr"><div id="txt"><h1>Carte interactive de Laelith</h1></div><div id="unset" onclick="unshowDescr()"><i class="fas fa-chevron-up"></i></div></div>
+	<div id="menu" style="display:none">
+			<button class='subMenu' onclick="setPoints(1)"><i class="fas fa-map-marker-alt"></i> Afficher/Masquer les points Ctrl+A</button>
+			<button class='subMenu noCel' onclick="trajet(1)"><i class="fas fa-arrows-alt-h"></i> Calculer des distances Ctrl+D</button><hr/>
+			<button class='subMenu' onclick="location.href='index8a66.html?map=R&amp;l=0'"><i class="fas fa-map"></i> Carte des Royaumes Oubliés</button>
+			<button class='subMenu' onclick="location.href='indexc496.html?map=W&amp;l=0'"><i class="fas fa-map"></i> Carte de Waterdeep</button>
+			<button class='subMenu' onclick="location.href='indexc945.html?map=N&amp;l=0'"><i class="fas fa-map"></i> Carte de Neverwinter</button>
+			<button class='subMenu' onclick="location.href='index5b49.html?map=B&amp;l=0'"><i class="fas fa-map"></i> Carte de la Porte de Baldur</button>
+			<button class='subMenu' onclick="location.href='indexa7fc.html?map=I&amp;l=0'"><i class="fas fa-map"></i> Carte du Valbise</button>
+			<button class='subMenu' onclick="location.href='indexbece.html?map=P&amp;l=0'"><i class="fas fa-map"></i> Carte des Provinces de Laelith</button>
+			<button class='subMenu' onclick="location.href='index8444.html?map=L&amp;l=0'"><i class="fas fa-map"></i> Carte de Laelith</button>
+			<button class='subMenu' onclick="location.href='index238a.html?map=K&amp;l=0'"><i class="fas fa-map"></i> Carte de Kara-Tur</button>
+			<!-- button class='subMenu' onclick="location.href='./index.php?map=G&l=0'"><i class="fas fa-map"></i> Carte de Greyhawk</button -->
+			<hr/>
+			<button class='subMenu noCel' onclick="window.open('submitbefe.html?map=L')"><i class="fas fa-bookmark"></i> Modifier/Ajouter un point</button>
+			<button class='subMenu noCel' onclick="window.open('https://www.aidedd.org/contact/')"><i class="fas fa-pencil-alt"></i> Envoyer un commentaire</button>
+			<button class='subMenu' onclick="test()"><i class="fas fa-info"></i> Compatibilité</button>
+	</div>
+	<div id="map"></div>
+
+	<i id="zoomP" class="fas fa-plus icon bZoomP"  title="Zoom" onclick="setZoom(zoomStrong)"></i>
+	<i id="zoomM" class="fas fa-minus icon bZoomM" title="Zoom" onclick="setZoom(-zoomStrong)"></i>
+	<i class="fas fa-map-marker-alt icon bPoints" title="Sélectionner les détails" onclick="$('#points').toggle();"></i>
+	<button id="bZone" class="bZone bZoneH" title="Afficher/Masquer les zones" onclick="toogleZones()"></button>
+	<div id="points" style="display:none"></div>
+
+	<script>
+ 		var map = new Raphael("map", drawWidth, drawHeight);	
+		map.canvas.setAttribute('preserveAspectRatio', 'xMidYMin');
+
+		if (isMobile())
+		{
+			$('#map').css("background-image", "url('images/"+imageMob+"')");
+			$('#txt').append('<p>Obtenez plus d\'<strong>informations</strong> en touchant une zone ou un point sur la carte, ou entrez le nom d\'un lieu ci-dessus.</p><p><strong>Zoomez</strong> en utilisant les boutons sur la carte ou avec deux doigts.</p><p><strong>Déplacez</strong> la carte en la faisant glisser.</p>');
+		}
+		else
+		{
+			$('#map').css("background-image", "url('images/"+image+"')");
+			$('#txt').append('<p>Obtenez plus d\'<strong>informations</strong> en cliquant sur une zone ou sur un point de la carte, ou entrez le nom d\'un lieu ci-dessus.</p><p><strong>Zoomez</strong> en utilisant les boutons sur la carte, la molette de votre souris ou les touches \'+\' et \'-\' de votre clavier.</p><p><strong>Déplacez</strong> la carte en la faisant glisser avec votre souris ou en utilisant les flèches de votre clavier.</p><p><strong>Calculez une distance</strong> en sélectionnant l\'option dans le menu.</p>');
+		}
+		$('#txt').append('<p><em>Carte de ' + auteur + '</em>.</p><br /><p class=\"center\"><a href="./index.php?map=L&l=1">ENGLISH VERSION</a></p><br />');
+		$('#bZone').css("background-image", "url('images/"+mini+"')");
+
+		/* remplit combolist */
+
+		var g=1;
+		$.each(groupe, function (i, item) {
+
+			if (bilang)
+			{
+				if (lang == 1)
+				{ nameP = item.name1; nameS = item.name0; txt = item.txt1; }
+				else
+				{ nameP = item.name0; nameS = item.name1; txt = item.txt0; }
+			}
+			else
+			{
+				nameP = nameS = item.name; txt = item.txt;
+			}
+
+			if (nameP == "GROUP")
+			{
+				$('#points').append("<input type='checkbox' id='ptv"+g+"' value='1' style='border-color:"+item.color+"' checked='checked' onchange='setPoints(2);' /><div class='legend' style='background-color:"+item.color+"'> </div> "+txt+"<br />");
+				g++;
+			}
+			else
+			{
+				availableLieux.push(nameP);
+				if (nameP != nameS) availableLieux.push(nameS);
+			}
+		});
+
+		resize(-1);
+		moveMap();
+
+		/* trace des zones */
+
+		var dot = map.circle();
+		var	line;
+ 		var style = {fill:"white", "fill-opacity":.5, "stroke-width":0,	"stroke-linejoin":"round"};
+		var p=0;
+		for (var regionName in zones) {
+			var obj = map.path(zones[regionName].path);
+			obj.node.id = "zone"+p;
+			p++;
+			arr[obj.id] = regionName;
+			obj.attr(style);
+			if (zones[arr[obj.id]].bord == "-")
+				obj.attr({'stroke-dasharray':'- '});
+ 			obj.attr({fill: zones[arr[obj.id]].couleur});
+
+			obj.click(function() {
+				if (viewZones == 1)
+				{
+					if (bilang)
+					{
+						if (lang == 1)
+						{ nameP = nameS = zones[arr[this.id]].name1;                            txtP = zones[arr[this.id]].txt1; txtS = zones[arr[this.id]].txt0;}
+						else
+						{ nameP = zones[arr[this.id]].name0; nameS = zones[arr[this.id]].name1; txtP = zones[arr[this.id]].txt0; txtS = zones[arr[this.id]].txt1;}
+					}
+					else
+					{
+						nameP = nameS = zones[arr[this.id]].name; 
+						txtP = txtS = zones[arr[this.id]].txt;
+					}
+
+					var descr = "<h2>"+nameP+"</h2>";
+					if (nameP != nameS) descr += "<h3>[ "+nameS+" ]</h3>";
+					if (txtP != "") descr += txtP; else descr += txtS;
+		
+					$('#txt').html(descr);
+					showDescr();
+				}
+			});
+
+			obj.mouseover (function() {
+				if (viewZones == 1)
+					this.attr({'stroke-width': lineFocus});
+			});
+
+		 	obj.mouseout (function() {
+				if (viewZones == 1) 
+					this.attr({'stroke-width': 0})
+			});
+		}
+
+		toogleZones();
+		setPoints(0);
+
+	$('#map').on('mousedown touchstart', function(e) {
+		e = e.originalEvent;
+
+		if (typeof (e.touches) !== 'undefined' && e.touches.length == 2)
+		{
+			oldX = Math.abs(e.touches[0].pageX - e.touches[1].pageX);
+			oldY = Math.abs(e.touches[0].pageY - e.touches[1].pageY);
+		}
+		else
+		{
+			if	(e.type == 'touchstart')
+			{
+				var xx = e.touches[0].pageX;
+				var yy = e.touches[0].pageY;
+			}
+			else
+			{
+				var xx = e.pageX;
+				var yy = e.pageY;
+			}
+
+			if (drawing == 1)
+			{
+				oldX = parseInt((offsetX + xx)*ratio);
+				oldY = parseInt((offsetY + yy)*ratio);
+				$('#txt').html(LgNextTra);
+				showDescr();
+				drawing = 2;
+			}
+			else if (drawing == 2)
+			{
+				drawLine( parseInt((offsetX + xx)*ratio), parseInt((offsetY + yy)*ratio));
+			}	
+			else
+			{
+				Xclick=xx; Yclick=yy;
+				clickToMove = 1;
+			}
+		}
+	});
+
+	$('#map').on('mouseup touchend', function() {
+		clickToMove = 0;
+	});
+
+	$('#map').on('mousemove touchmove', function(e) {
+		e = e.originalEvent;
+		if (typeof (e.touches) !== 'undefined' && e.touches.length == 2)
+		{
+			Xclick = Math.abs(e.touches[0].pageX - e.touches[1].pageX);
+			Yclick = Math.abs(e.touches[0].pageY - e.touches[1].pageY);
+
+			var sensX = Xclick - oldX;
+			var sensY = Yclick - oldY;
+			if (sensX > 10 || sensY > 10)
+			{
+				setZoom(zoomLite);
+				oldX = Xclick;
+				oldY = Yclick;
+			}
+			else if (sensX < -10 || sensY < -10)
+			{
+				setZoom(-zoomLite);
+				oldX = Xclick;
+				oldY = Yclick;
+			}
+		}
+		else
+		{
+			if	(e.type == 'touchmove')
+			{
+				var xx = e.touches[0].pageX;
+				var yy = e.touches[0].pageY;
+			}
+			else
+			{
+				var xx = e.pageX;
+				var yy = e.pageY;
+			}
+			if ((clickToMove == 1) && (zoom > 1))
+			{
+				offsetX = offsetX - xx +Xclick;
+				offsetY = offsetY - yy +Yclick;
+				Xclick = xx;
+				Yclick = yy;
+				moveMap();
+			}
+		}
+	});
+	</script>
+</body>
+
+<!-- Mirrored from www.aidedd.org/atlas/index.php?map=L&l=0 by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 15 Mar 2021 19:29:12 GMT -->
+</html>
