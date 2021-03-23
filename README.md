@@ -1,3 +1,3 @@
-# arzakRubin-rpg.github.io
+# Teste RPG
 Material para estudo
-https://ArzakRubin-rpg.github.io
+https://https://arzakrubin.github.io/rpg/RPGMAP/atlas/index1
